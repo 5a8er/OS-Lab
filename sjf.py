@@ -1,101 +1,74 @@
-#SaberAzizi
-#4021133092
-#Algoritm Shortest Job First (SJF)
+# Algorithm: Shortest Job First (SJF)
 
 def main():
-    # ورودی
+    # Input
     num = int(input("Enter the number of processes: "))
 
-    time_vorood = []
-    time_ejra = []
-    index = []
-    aya_takmilshd = [] 
+    arrival_times = []
+    execution_times = []
+    process_ids = []
+    is_completed = [False] * num
+    completed_count = 0
 
+    # Get process details from user
     for i in range(num):
-        print(f"\nVorood va Ejra baraye Process shomare[{i + 1}]")
-        x = int(input("zaman vorood: "))
-        time_vorood.append(x)
-        y = int(input("zaman ejra: "))
-        time_ejra.append(y)
-        index.append(f"P{i + 1}")
-    
-    tedad_takmilshd = 0
-    aya_takmilshd = [] 
-    for i in range(num):
-        aya_takmilshd.append(False)
-    
-    time = 0 
-    gant = []
+        print(f"\nInput for Process {i + 1}:")
+        try:
+            arrival_time = int(input("Arrival time: "))
+            execution_time = int(input("Execution time: "))
+            if arrival_time < 0 or execution_time <= 0:
+                raise ValueError("Invalid time values")
+            arrival_times.append(arrival_time)
+            execution_times.append(execution_time)
+            process_ids.append(f"P{i + 1}")
+        except ValueError as e:
+            print(f"Error: {e}")
+            return
+    current_time = 0
+    gantt_chart = []
 
-    # حلقه اصلی
-    while tedad_takmilshd < num:
-        index_amade_ejra = []
-        for item in range(num): 
-            if aya_takmilshd[item] == False and time_vorood[item] <= time:
-                index_amade_ejra.append(item)
-        
-        if len(index_amade_ejra) == 0: 
-            aya_baghimandeh_yaft = False 
-            for item in range(num): 
-                if aya_takmilshd[item] == False:
-                    aya_baghimandeh_yaft = True
-                    break 
-            if aya_baghimandeh_yaft == False: 
-                break 
-            continue 
+    # Main scheduling loop
+    while completed_count < num:
+        ready_processes = []
+        for i in range(num):
+            if not is_completed[i] and arrival_times[i] <= current_time:
+                ready_processes.append(i)
 
-        tedad_amade = len(index_amade_ejra)
-        if tedad_amade > 1: 
-            for i in range(tedad_amade - 1):
-                aya_jabeja_shod = False
-                for j in range(0, tedad_amade - i - 1):
-                    andis_aval = index_amade_ejra[j]
-                    andis_dovom = index_amade_ejra[j + 1]
-                    bayad_jabeja_shavad = False
-                    if time_ejra[andis_aval] > time_ejra[andis_dovom]:
-                        bayad_jabeja_shavad = True
-                    elif time_ejra[andis_aval] == time_ejra[andis_dovom] and \
-                         time_vorood[andis_aval] > time_vorood[andis_dovom]:
-                        bayad_jabeja_shavad = True
-    
-                    if bayad_jabeja_shavad == True: 
-                        movaghat = index_amade_ejra[j]
-                        index_amade_ejra[j] = index_amade_ejra[j + 1]
-                        index_amade_ejra[j + 1] = movaghat
-                        aya_jabeja_shod = True
-                
-                if aya_jabeja_shod == False: 
-                    break 
-        
-        if len(index_amade_ejra) == 0: 
+        if not ready_processes:
+            # Check if there are any remaining processes
+            remaining_processes = False
+            for i in range(num):
+                if not is_completed[i]:
+                    remaining_processes = True
+                    break
+            if not remaining_processes:
+                break
+            current_time += 1
             continue
 
-        andis_process_entekhabi = index_amade_ejra[0]
-        zaman_shoroo_process = time
-        zaman_payan_entekhabi = time + time_ejra[andis_process_entekhabi]
-        
-        gant.append((index[andis_process_entekhabi], zaman_shoroo_process, zaman_payan_entekhabi))
-        
-        aya_takmilshd[andis_process_entekhabi] = True
-        time = zaman_payan_entekhabi 
-        tedad_takmilshd += 1 
-        
-    # خروجی
+        # Sort ready processes by execution time, then by arrival time as tiebreaker
+        ready_processes.sort(key=lambda i: (execution_times[i], arrival_times[i]))
+
+        selected_process = ready_processes[0]
+        start_time = current_time
+        end_time = current_time + execution_times[selected_process]
+
+        gantt_chart.append((process_ids[selected_process], start_time, end_time))
+
+        is_completed[selected_process] = True
+        current_time = end_time
+        completed_count += 1
+
+    # Output results
     print("\n--------------------------SJF-------------------------\n")
 
-    if len(gant) > 0:
-        tartib = [] 
-        for item in gant: 
-            tartib.append(item[0])
-        print("tartib:", ", ".join(tartib))
-         
-        print("\nGant :")
-        gant_process, currenttime, payan_proces = gant[0] 
-        print(f"{gant_process} --- {currenttime} : {payan_proces}")
-        
-        for item in range(1, len(gant)): 
-            gant_process, currenttime, payan_proces = gant[item] 
-            print(f"{gant_process} --- {currenttime} : {payan_proces}")
+    if gantt_chart:
+        process_order = [entry[0] for entry in gantt_chart]
+        print("Final Process order:", ", ".join(process_order))
+
+        print("\nGantt Chart:")
+        for process_id, start, end in gantt_chart:
+            print(f"{process_id} --- {start} : {end}")
 
 if __name__ == "__main__":
     main()

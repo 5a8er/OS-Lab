@@ -1,28 +1,39 @@
 def main():
-    num = int(input("How many process you want to enter : "))
+    try:
+        num = int(input("How many process you want to enter : "))
+        if num <= 0:
+            raise ValueError("Number of processes must be positive")
+    except ValueError as e:
+        print(f"Invalid input: {e}")
+        return
 
     input_list = []
     p_time = []
     index = []
 
     for i in range(num):
-        print(f"Enter Process Number : {i + 1}")
-        in_process = int(input())
-        input_list.append(in_process)
-
-        out_process = int(input())
-        p_time.append(out_process)
+        print(f"Process {i + 1}:")
+        arrival_time = int(input("  Enter arrival time: "))
+        input_list.append(arrival_time)
+        
+        processing_time = int(input("  Enter processing time: "))
+        p_time.append(processing_time)
 
         index.append(f"P{i + 1}")
 
-    for i in range(len(input_list)):
-        for j in range(i + 1, len(input_list)):
-            if input_list[i] > input_list[j]:
-                input_list[i], input_list[j] = input_list[j], input_list[i]
-                p_time[i], p_time[j] = p_time[j], p_time[i]
-                index[i], index[j] = index[j], index[i]
+    # Sort processes by arrival time
+    processes = list(zip(input_list, p_time, index))
+    processes.sort(key=lambda x: x[0])  # Sort by arrival time
+    input_list, p_time, index = zip(*processes)
+    input_list, p_time, index = list(input_list), list(p_time), list(index)
 
-    print("\n---------------------------------------------------\n")
+    print("\n---------------------FCFS-------------------------\n")
+    
+    # Create list to store process order and print it
+    process_order = [f"P{i+1}" for i in range(num)]
+    print("Final Process order:", ", ".join(process_order))
+    
+    print("\nGantt Chart:")
     currenttime = input_list[0] + p_time[0]
     print(f"{index[0]} --- {input_list[0]} : {currenttime}")
 

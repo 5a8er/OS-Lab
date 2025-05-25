@@ -1,30 +1,34 @@
 import importlib
 
 def menu():
-    print("Select the scheduling algorithm to run:")
-    print("1. FCFS (First-Come, First-Served)")
-    print("2. RR (Round Robin)")
-    print("3. SJF (Shortest Job First)")
-    print("4. SRT (Shortest Remaining Time)")
-    print("5. Exit")
+    while True:
+        print("Select the scheduling algorithm to run:")
+        print("1. FCFS (First-Come, First-Served)")
+        print("2. RR (Round Robin)")
+        print("3. SJF (Shortest Job First)")
+        print("4. SRT (Shortest Remaining Time)")
+        print("5. Exit")
 
-    choice = input("Enter the number of your choice: ")
+        choice = input("Enter the number of your choice: ").strip()
 
-    match choice:
-        case "1":
-            run_algorithm("fcfs")
-        case "2":
-            run_algorithm("rr")
-        case "3":
-            run_algorithm("sjf")
-        case "4":
-            run_algorithm("srt")
-        case "5":
-            print("Exiting program.")
-            exit()
-        case _:
-            print("Invalid choice. Please try again.")
-            menu()
+        match choice:
+            case "1":
+                run_algorithm("fcfs")
+                break
+            case "2":
+                run_algorithm("rr")
+                break
+            case "3":
+                run_algorithm("sjf")
+                break
+            case "4":
+                run_srt()
+                break
+            case "5":
+                print("Exiting program.")
+                return
+            case _:
+                print("Invalid choice. Please try again.\n")
 
 def run_algorithm(module_name):
     try:
@@ -40,8 +44,30 @@ def run_algorithm(module_name):
     
     except ModuleNotFoundError:
         print(f"{module_name.upper()} module not found.")
-    except Exception as e:
+    except ValueError as e:
         print(f"Error executing {module_name.upper()}: {e}")
+
+def run_srt():
+    from srt_scheduler import run_srt_scheduler, print_schedule
+    try:
+        # Get input from user
+        num = int(input("Enter the number of processes: "))
+        arrival_times = []
+        burst_times = []
+
+        for i in range(num):
+            print(f"\nArrival and Burst time for Process [{i + 1}]")
+            arrival_time = int(input("Arrival time: "))
+            arrival_times.append(arrival_time)
+            burst_time = int(input("Burst time: "))
+            burst_times.append(burst_time)
+
+        # Run the SRT scheduler
+        gant, _ = run_srt_scheduler(num, arrival_times, burst_times)
+        print_schedule(gant)
+
+    except ValueError as e:
+        print(f"Invalid input: {e}")
 
 if __name__ == "__main__":
     menu()
