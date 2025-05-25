@@ -48,23 +48,31 @@ def run_algorithm(module_name):
         print(f"Error executing {module_name.upper()}: {e}")
 
 def run_srt():
-    from srt_scheduler import run_srt_scheduler, print_schedule
+    from srt import run_srt_scheduler, print_schedule
     try:
         # Get input from user
         num = int(input("Enter the number of processes: "))
+        if num <= 0:
+            raise ValueError("Number of processes must be positive")
+        
         arrival_times = []
         burst_times = []
-
+ 
         for i in range(num):
             print(f"\nArrival and Burst time for Process [{i + 1}]")
             arrival_time = int(input("Arrival time: "))
+            if arrival_time < 0:
+                raise ValueError("Arrival time cannot be negative")
             arrival_times.append(arrival_time)
+            
             burst_time = int(input("Burst time: "))
+            if burst_time <= 0:
+                raise ValueError("Burst time must be positive")
             burst_times.append(burst_time)
 
         # Run the SRT scheduler
-        gant, _ = run_srt_scheduler(num, arrival_times, burst_times)
-        print_schedule(gant)
+        gantt_chart, process_order = run_srt_scheduler(num, arrival_times, burst_times)
+        print_schedule(gantt_chart, process_order)
 
     except ValueError as e:
         print(f"Invalid input: {e}")

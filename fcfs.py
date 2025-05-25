@@ -29,17 +29,17 @@ def main():
 
     print("\n---------------------FCFS-------------------------\n")
     
-    # Create list to store process order and print it
-    process_order = [f"P{i+1}" for i in range(num)]
-    print("Final Process order:", ", ".join(process_order))
-    
-    print("\nGantt Chart:")
-    currenttime = input_list[0] + p_time[0]
-    print(f"{index[0]} --- {input_list[0]} : {currenttime}")
+    # Show the actual execution order after sorting
+    print("Final Process order:", ", ".join(index))
+ print("\nGantt Chart:")
+ currenttime = max(input_list[0], 0)  # Start at arrival time or 0
+ print(f"{index[0]} --- {currenttime} : {currenttime + p_time[0]}")
+ currenttime += p_time[0]
 
-    for i in range(1, len(index)):
-        print(f"{index[i]} --- {currenttime} : {currenttime + p_time[i]}")
-        currenttime += p_time[i]
-
-if __name__ == "__main__":
-    main()
+ for i in range(1, len(index)):
+     # Check if there's idle time before next process
+     if input_list[i] > currenttime:
+         print(f"IDLE --- {currenttime} : {input_list[i]}")
+         currenttime = input_list[i]
+     print(f"{index[i]} --- {currenttime} : {currenttime + p_time[i]}")
+     currenttime += p_time[i]
